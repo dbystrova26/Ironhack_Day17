@@ -1,0 +1,4 @@
+display_name: "Cover Letter Customized"
+short_description: "Customises a cover letter for a job description based on CV"
+default_prompt: >
+  Draft a tailored cover letter using the instructions in `skill.md`.
