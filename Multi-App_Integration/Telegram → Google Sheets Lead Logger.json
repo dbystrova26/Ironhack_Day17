@@ -1,0 +1,301 @@
+{
+  "name": "Telegram → Google Sheets Lead Logger",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "Load Data Flow\n\n**Nodes:**\n1. Form Trigger — user uploads PDF\n2. Default Data Loader — reads binary PDF\n3. Cohere Embeddings — converts text to vectors\n4. Pinecone Insert — stores vectors persistently\n",
+        "height": 244,
+        "width": 384,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1632,
+        -208
+      ],
+      "typeVersion": 1,
+      "id": "9ff5cda2-f0b8-4f14-a183-54346134cd91",
+      "name": "Load Data Flow Note1"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "id": "c2939ef7-7c73-4cb5-b3c4-50bda257c1a2",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        384,
+        384
+      ],
+      "webhookId": "telegram-lead-webhook-001",
+      "credentials": {
+        "telegramApi": {
+          "id": "SbrYGR2w6F5GfCfG",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "field-001",
+              "name": "Timestamp",
+              "value": "={{ $now }}",
+              "type": "string"
+            },
+            {
+              "id": "field-002",
+              "name": "Sender Username",
+              "value": "={{ $json.message.from.username || 'no_username' }}",
+              "type": "string"
+            },
+            {
+              "id": "field-003",
+              "name": "Sender Name",
+              "value": "={{ $json.message.from.first_name + ' ' + ($json.message.from.last_name || '') }}",
+              "type": "string"
+            },
+            {
+              "id": "field-004",
+              "name": "Chat ID",
+              "value": "={{ String($json.message.chat.id) }}",
+              "type": "string"
+            },
+            {
+              "id": "field-005",
+              "name": "Message Text",
+              "value": "={{ $json.message.text }}",
+              "type": "string"
+            },
+            {
+              "id": "field-006",
+              "name": "Status",
+              "value": "New",
+              "type": "string"
+            },
+            {
+              "id": "field-007",
+              "name": "Source",
+              "value": "Telegram",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d75bdd15-dd31-4cdb-9ad2-6e034844e919",
+      "name": "Set",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        608,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "12I_k2wUiU6aXVDGsItHFQ1_CGxhzjY1UL7wjg4LVYk4",
+          "mode": "list",
+          "cachedResultName": " Real Estate Lead Tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12I_k2wUiU6aXVDGsItHFQ1_CGxhzjY1UL7wjg4LVYk4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "=Inbound Leads"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Sender Username",
+              "displayName": "Sender Username",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Sender Name",
+              "displayName": "Sender Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Chat ID",
+              "displayName": "Chat ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Message Text",
+              "displayName": "Message Text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Source",
+              "displayName": "Source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "d6d02425-90e8-4663-b3bb-6e205580fd31",
+      "name": "Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        832,
+        384
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "tUagxwnM08tuyX5D",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Telegram Trigger": [
+      {
+        "json": {
+          "name": "First item",
+          "code": 1
+        }
+      },
+      {
+        "json": {
+          "name": "Second item",
+          "code": 2
+        }
+      }
+    ],
+    "Google Sheets": [
+      {
+        "json": {
+          "Timestamp": "2026-05-13T17:27:51.956+02:00",
+          "Sender Username": null,
+          "Sender Name": null,
+          "Chat ID": null,
+          "Message Text": null,
+          "Status": "New",
+          "Source": "Telegram"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {
+          "Timestamp": "2026-05-13T17:27:51.959+02:00",
+          "Sender Username": null,
+          "Sender Name": null,
+          "Chat ID": null,
+          "Message Text": null,
+          "Status": "New",
+          "Source": "Telegram"
+        },
+        "pairedItem": {
+          "item": 1
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "6718f080-2107-4983-809f-dbf2696585c6",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "22f60916f9c7b26e6914b0421ec3dd7a647e0e5851a764c1369ac1e12e3255be"
+  },
+  "id": "06WlhMZrgBw5g8TK",
+  "tags": []
+}
