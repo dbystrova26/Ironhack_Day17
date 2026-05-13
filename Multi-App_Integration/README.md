@@ -35,6 +35,7 @@ Automation workflow built in n8n. Captures inbound Telegram bot messages and log
    - Open Google Sheets node → Credential → Create new → OAuth2
    - Paste Client ID and Client Secret from Google Cloud Console
    - Click Sign in with Google → allow access
+   - Confirm the credential status shows connected before testing
 
 4. **Create the Google Sheet**
    - Create a sheet named `Real Estate Lead Tracker`
@@ -51,6 +52,7 @@ Automation workflow built in n8n. Captures inbound Telegram bot messages and log
 7. **Test**
    - Send a message to your Telegram bot
    - Check the `Inbound Leads` tab — a new row should appear within seconds
+   - Confirm the workflow executes through the Google Sheets node without errors
 
 ## Field Mapping
 
@@ -63,3 +65,7 @@ Automation workflow built in n8n. Captures inbound Telegram bot messages and log
 | Message Text | `$json.message.text` |
 | Status | `New` (literal) |
 | Source | `Telegram` (literal) |
+
+## Why This Workflow Exists
+
+This is a realistic real-estate operations pattern: Telegram is often the fastest intake channel for tenant, investor, or landlord enquiries, while Google Sheets is a lightweight shared tracker that teams already use for lead follow-up and reporting. The automation removes manual copy-paste, reduces transcription errors, and gives the team a live pipeline view without requiring a heavier CRM setup.

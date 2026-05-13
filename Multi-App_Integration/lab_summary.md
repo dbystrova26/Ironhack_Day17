@@ -1,9 +1,25 @@
-# lab_summary.md
-
 ## Real-World Justification
 
-A boutique real estate advisory firm receives inbound enquiries daily via Telegram — potential tenants asking about available units, investors requesting deal summaries, and landlords seeking lease assessments. Currently a team member manually copies each message into a shared Google Sheet used as a lead tracker, a process that takes 5–10 minutes per enquiry, introduces transcription errors, and means leads received outside business hours are not logged until the next morning. This automation connects a Telegram bot directly to the "Inbound Leads" Google Sheet so every message is instantly captured as a structured row — with sender, timestamp, message content, and status — without any manual intervention. The result is faster response time, zero dropped leads, a clean audit trail, and a live shared view the whole team can act on in real time. Telegram fits because it is already the team's preferred communication channel with clients; Google Sheets fits because it is the firm's existing lightweight CRM that requires no new tooling or licences.
+A boutique real estate advisory team receives inbound enquiries daily via Telegram from tenants, investors, and landlords. Manually copying each message into a shared Google Sheet takes time, introduces errors, and delays logging until someone is available. This workflow removes that bottleneck by capturing each Telegram message as a structured row in the `Inbound Leads` sheet, giving the team a live tracker, cleaner audit trail, and faster follow-up.
 
-## Integration Pair, Field Mapping, Challenges, and Extension
+## Success Criteria
 
-This workflow integrates **Telegram Trigger → Set → Google Sheets** (Append or Update Row). The Telegram Trigger fires on every inbound `message` update and produces a deeply nested JSON object; the Set node flattens it by mapping `$json.message.text` → `Message Text`, `$json.message.from.first_name` + `last_name` → `Sender Name`, `$json.message.from.username` → `Sender Username` (with a `no_username` fallback for accounts without a public handle), `String($json.message.chat.id)` → `Chat ID`, plus two literals: `Status: New` and `Source: Telegram`. The hardest part was the nested payload structure — attempting to map directly from the Telegram Trigger to Google Sheets without the Set node produces `[object Object]` in cells because Sheets receives the raw nested object rather than the string value; the Set node is essential as a flattening layer. A second gotcha was that Telegram chat IDs are large negative integers that Google Sheets can misread — wrapping in `String()` prevents precision loss. One extension idea: add an **IF node** after Set that checks whether `Message Text` contains keywords like `urgent` or `buy` and, if true, sends a Telegram message back to the team group as a high-priority alert — turning this passive logger into an active triage tool.
+- The Telegram and Google Sheets credentials both work.
+- The workflow runs through the Google Sheets node without errors.
+- The destination sheet receives rows that match the mapped fields.
+- The mapping is explicit: timestamp, sender username, sender name, chat ID, message text, status, and source.
+- The setup is useful for a real operations team that needs a lightweight lead logger without a full CRM.
+
+## Integration Pair and Field Mapping
+
+This workflow uses **Telegram Trigger → Set → Google Sheets**. The Telegram Trigger produces a nested JSON object, and the Set node flattens it into sheet-ready fields. The mapping is:
+
+- `Timestamp` from `$now`
+- `Sender Username` from `$json.message.from.username` with a `no_username` fallback
+- `Sender Name` from `$json.message.from.first_name` + `last_name`
+- `Chat ID` from `String($json.message.chat.id)`
+- `Message Text` from `$json.message.text`
+- `Status` as `New`
+- `Source` as `Telegram`
+
+The Set node is required because Google Sheets should receive flat values, not raw nested objects. Wrapping `Chat ID` in `String()` avoids precision issues with large or negative Telegram IDs.
